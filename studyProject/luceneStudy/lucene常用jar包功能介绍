@@ -1,0 +1,17 @@
+Lucene 软件包的发布形式是一个 JAR 文件，下面我们分析一下这个 JAR 文件里面的主要的 JAVA 包
+Package: org.apache.lucene.document
+这个包提供了一些为封装要索引的文档所需要的类，比如 Document, Field。这样，每一个文档最终被封装成了一个 Document 对象。 Field构造函数中有二个参数需要注意：Store和Index。UnIndex字段表示即不会切词，也不会被索引。Unstore与Unindex正好相反。会被切词也会被索引，但是并不会被存储在索引中。
+Package: org.apache.lucene.analysis
+这个包主要功能是对文档进行分词，因为文档在建立索引之前必须要进行分词，所以这个包的作用可以看成是为建立索引做准备工作。
+Package: org.apache.lucene.index
+这个包提供了一些类来协助创建索引以及对创建好的索引进行更新。这里面有两个基础的类：IndexWriter 和 IndexReader，其中 IndexWriter 是用来创建索引并添加文档到索引中的，IndexReader 是用来删除索引中的文档的。
+Package: org.apache.lucene.search
+这个包提供了对在建立好的索引上进行搜索所需要的类。比如 IndexSearcher 和 Hits, IndexSearcher 定义了在指定的索引上进行搜索的方法，Hits 用来保存搜索得到的结果。
+queryParser
+该包主要用于向lucene提供检索时的分析支持，搜索引擎除了要在建立索引时对大量文本进行分析，同时也要在用户输入检索字段时对用户的输入进行分析，以确定检索的关键字和一些关键字间的逻辑关系（与或 非等）
+search包
+顾名思义就是负责检索的一个包，在搜索引擎建立完索引后，用户调用这个包中提供的工具对索引进行检索。
+store包
+该包主要用于提供对索引存储的支持，它里面的FSDirectory和RAMDirectory类是lucene中最为重要的两个索引目录。
+util包
+该包为lucenetg提供了一些常用工具类和俄常量类的支持。
