@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--引入redis.properties配置文件-->
+    <context:property-placeholder location="classpath:redis.properties"/>
+
+    <!-- 自动扫描该包，使SpringMVC认为包下用了@controller注解的类是控制器 -->
+    <mvc:annotation-driven />
+    <context:component-scan base-package="com.study.springredissession" />
+
+
+
+    <!-- 视图解析器 -->
+    <bean id="viewResolver"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"></property>
+        <property name="suffix" value=".jsp"></property>
+
+        <property name="viewClass"
+                  value="org.springframework.web.servlet.view.JstlView"></property>
+    </bean>
+
+
+
+    <!--将session放入redis-->
+    <bean id="redisHttpSessionConfiguration" class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
+        <!--初始化cookie信息-->
+        <property name="cookieSerializer" ref="cookieSerializer"/>
+        <!--session过期时间-->
+        <property name="maxInactiveIntervalInSeconds" value="600"/>
+    </bean>
+
+    <!--定义cookie session名称-->
+    <bean id="cookieSerializer"   class="org.springframework.session.web.http.DefaultCookieSerializer">
+        <property name="cookieName" value="SESSION"/>
+    </bean>
+
+    <!--配置redis连接池-->
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <!--允许开启的最大连接数-->
+        <property name="maxTotal" value="100"/>
+        <!--最大空闲连接数-->
+        <property name="maxIdle" value="10"/>
+    </bean>
+
+
+    <!--jedis连接工厂配置
+        destroy-method : 容器销毁之前执行的方法
+    -->
+    <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" destroy-method="destroy">
+        <property name="hostName" value="${redis.host}"/>
+        <property name="port" value="${redis.port}"/>
+        <property name="password" value="${redis.pass}" />
+        <property name="timeout" value="3000"/>
+        <property name="usePool" value="true"/>
+        <property name="poolConfig" ref="jedisPoolConfig"/>
+    </bean>
+
+
+</beans>
